@@ -1,17 +1,17 @@
-//ID¼°½ø¶ÈÎÄ¼şÂ·¾¶
-Dim idspath = "/sdcard/»ğÉ½.txt"
+//IDåŠè¿›åº¦æ–‡ä»¶è·¯å¾„
+Dim idspath = "/sdcard/ç«å±±.txt"
 Dim progress = "/sdcard/qz95277"
-//¿ÉÅäÖÃ²ÎÊı
-Dim deviceDelay = ReadUIConfig("µã»÷ÑÓÊ±")*1000
-Dim playTime = ReadUIConfig("²¥·ÅÊ±³¤")*1000
-Dim loadDelay = ReadUIConfig("ÍøÂçÑÓÊ±")*1000
-Dim followRound = ReadUIConfig("¹Ø×¢ÂÖÊı")
-Dim likeRound = ReadUIConfig("µãÔŞÂÖÊı")
-Dim maxFollow = CInt(ReadUIConfig("¹Ø×¢ÉÏÏŞ"))
-Dim maxLike = CInt(ReadUIConfig("µãÔŞÉÏÏŞ"))
-Dim isFollow = ReadUIConfig("¹Ø×¢")
-Dim isLike = ReadUIConfig("µãÔŞ")
-//×ø±ê
+//å¯é…ç½®å‚æ•°
+Dim deviceDelay = ReadUIConfig("ç‚¹å‡»å»¶æ—¶")*1000
+Dim playTime = ReadUIConfig("æ’­æ”¾æ—¶é•¿")*1000
+Dim loadDelay = ReadUIConfig("ç½‘ç»œå»¶æ—¶")*1000
+Dim followRound = ReadUIConfig("å…³æ³¨è½®æ•°")
+Dim likeRound = ReadUIConfig("ç‚¹èµè½®æ•°")
+Dim maxFollow = CInt(ReadUIConfig("å…³æ³¨ä¸Šé™"))
+Dim maxLike = CInt(ReadUIConfig("ç‚¹èµä¸Šé™"))
+Dim isFollow = ReadUIConfig("å…³æ³¨")
+Dim isLike = ReadUIConfig("ç‚¹èµ")
+//åæ ‡
 Dim homeX = 70, homeY = 1218
 Dim searchX = 42, searchY = 87
 Dim cancelX = 660, cancelY = 90
@@ -23,7 +23,7 @@ Dim likeX = 505, likeY = 1210
 Dim videoX = 119, videoY = 765
 //Dim uplaodX = 360, uploadY = 1230
 //Dim photosX = 120, phontosY = 1235
-//¹ı³Ì±äÁ¿
+//è¿‡ç¨‹å˜é‡
 Dim followFlag, likeFlag, fFlag, lFlag, followNumber, likeNumber, idLines
 Dim pointers(), ids()
 /*
@@ -39,7 +39,7 @@ Function encrypt(str)
     //enstr2 = Now()
 End Function
 Function Auth()
-    Dim sn = ReadUIConfig("ĞòÁĞºÅ")
+    Dim sn = ReadUIConfig("åºåˆ—å·")
     Dim id = GetDeviceID()
     Dim payload ="username=" & sn & "&password=" & id
     Dim srv_url = "http://192.168.11.189/signin"
@@ -47,15 +47,15 @@ Function Auth()
     If r = "valid" Then 
         Auth = True
     ElseIf r = "unvalid" Then
-        ShowMessage "ĞòÁĞºÅ´íÎó"
+        ShowMessage "åºåˆ—å·é”™è¯¯"
         Delay cDly
         Auth = False
     ElseIf r = "duplicate" Then
-        ShowMessage "¸ÃĞòÁĞºÅÒÑ±»ÆäËûÊÖ»ú°ó¶¨"
+        ShowMessage "è¯¥åºåˆ—å·å·²è¢«å…¶ä»–æ‰‹æœºç»‘å®š"
         Delay cDly
         Auth = False
     Else 
-        ShowMessage "ÈÏÖ¤³¬Ê±£¬Çë¼ì²éÍøÂç"
+        ShowMessage "è®¤è¯è¶…æ—¶ï¼Œè¯·æ£€æŸ¥ç½‘ç»œ"
         Delay cDly
         Auth = False
     End If
@@ -68,7 +68,7 @@ Sub TapDly(x, y)
 End Sub
 
 Function OnScriptExit()
-	ShowMessage "³ÌĞò¼´½«ÍË³ö"
+	ShowMessage "ç¨‹åºå³å°†é€€å‡º"
 	Delay deviceDelay
 	File.ReadLines(progress, pointers)
 End Function
@@ -85,7 +85,7 @@ Function Search(n)
     End If
 End Function
 
-//´ÓÖ¸¶¨ÓÃ»§¿ªÊ¼¹Ø×¢
+//ä»æŒ‡å®šç”¨æˆ·å¼€å§‹å…³æ³¨
 Function Follow(fp)
     If followNumber <= maxFollow Then
         For p = fp To idLines - 1
@@ -101,7 +101,7 @@ Function Follow(fp)
                         fFlag = True
                         pointers(7) = "1"
                         //File.WriteLine(progress, pointers)
-                        ShowMessage "ÒÑÍê³ÉµÚ" & followNumber \ (maxFollow \ followRound) & "ÂÖ¹Ø×¢, ¹²" & followRound & "ÂÖ"
+                        ShowMessage "å·²å®Œæˆç¬¬" & followNumber \ (maxFollow \ followRound) & "è½®å…³æ³¨, å…±" & followRound & "è½®"
                         Delay deviceDelay
                         //Call Upload()
                         EndScript
@@ -114,13 +114,13 @@ Function Follow(fp)
     Else
         followFlag = False
         pointers(5) = "0" 
-        ShowMessage "¹Ø×¢´ÎÊıÒÑ´ïÉÏÏŞ, ²»ÔÙ¹Ø×¢"
+        ShowMessage "å…³æ³¨æ¬¡æ•°å·²è¾¾ä¸Šé™, ä¸å†å…³æ³¨"
         Delay deviceDelay
     End If		
 End Function
 
 Function DoFollow(p)
-    //½øÈëËÑË÷Ò³
+    //è¿›å…¥æœç´¢é¡µ
     TapDly(searchX, searchY)
     Dim r = Search(p)
     If r = True Then 
@@ -128,29 +128,29 @@ Function DoFollow(p)
         FindColor(600, 180, 665, 205, "0022FF", 0, 0.9, intX, intY)
         If intX > -1 And intY > -1 Then
             TapDly followX, followY
-            //ÅĞ¶ÏÊÇ·ñ¹Ø×¢³É¹¦
+            //åˆ¤æ–­æ˜¯å¦å…³æ³¨æˆåŠŸ
             FindColor(600,180,665,205,"0022FF",0,0.9,intX,intY)
             If intX > -1 And intY > -1 Then
                 DoFollow = False
-                ShowMessage "¹Ø×¢Ê§°Ü"
+                ShowMessage "å…³æ³¨å¤±è´¥"
                 Delay deviceDelay
             Else 
                 followNumber = followNumber + 1
                 pointers(1) = CStr(followNumber)
                 fFlag = False
                 pointers(7) = "0"
-                ShowMessage"ÒÑ¹Ø×¢µÚ" & followNumber & "¸öÓÃ»§"
+                ShowMessage"å·²å…³æ³¨ç¬¬" & followNumber & "ä¸ªç”¨æˆ·"
                 Delay deviceDelay
             End If
         Else 
-            ShowMessage "¹Ø×¢¹ıÁË"
+            ShowMessage "å…³æ³¨è¿‡äº†"
             Delay deviceDelay
         End If
     Else 
-        ShowMessage "ËÑË÷Ê§°Ü£¬Çë¼ì²éID»òÍøÂç"
+        ShowMessage "æœç´¢å¤±è´¥ï¼Œè¯·æ£€æŸ¥IDæˆ–ç½‘ç»œ"
         Delay deviceDelay
     End If
-    //ÍË³öËÑË÷Ò³	
+    //é€€å‡ºæœç´¢é¡µ	
     //KeyPress "Back"
     //Delay deviceDelay
     TapDly(cancelX, cancelY)
@@ -173,7 +173,7 @@ Function Like(fl)
                         lFlag = True
                         pointers(8) = "1"
                         //File.WriteLines(progress, pointers) 
-                        ShowMessage "ÒÑÍê³ÉµÚ" & likeNumber \ (maxLike \ likeRound) & "ÂÖµãÔŞ£¬ ¹²" & likeRound & "ÂÖ"
+                        ShowMessage "å·²å®Œæˆç¬¬" & likeNumber \ (maxLike \ likeRound) & "è½®ç‚¹èµï¼Œ å…±" & likeRound & "è½®"
                         Delay deviceDelay
                         EndScript
                     End If	
@@ -187,28 +187,28 @@ Function Like(fl)
         likeFlag = False
         pointers(2) = "0"
         //File.WriteLines(progress, pointers)
-        ShowMessage "¹Ø×¢´ÎÊıÒÑ´ïÉÏÏŞ, ²»ÔÙ¹Ø×¢"
+        ShowMessage "å…³æ³¨æ¬¡æ•°å·²è¾¾ä¸Šé™, ä¸å†å…³æ³¨"
         Delay deviceDelay
     End If
 End Function
 
 Function DoLike(p)
-    //½øÈëËÑË÷Ò³
+    //è¿›å…¥æœç´¢é¡µ
     TapDly searchX, searchY
     Dim r = Search(p)
     If r =True Then 
-        //½øÈëÓÃ»§Ò³
+        //è¿›å…¥ç”¨æˆ·é¡µ
         TapDly(idEntryX, idEntryY)
         Delay loadDelay
         If CmpColorEx("110|780|FFFFFF, 80|810|FFFFFF, 200|810|FFFFFF, 110|845|FFFFFF", 0.9) = 1 Then 
-            ShowMessage "Î´·¢ÏÖÊÓÆµ"
+            ShowMessage "æœªå‘ç°è§†é¢‘"
             Delay deviceDelay
         Else 
-            //½øÈë²¥·ÅÒ³
+            //è¿›å…¥æ’­æ”¾é¡µ
             TapDly(videoX, videoY)
             Delay loadDelay
             If CmpColorEx("492|1202|0022FF,507|1216|0022FF", 0.9) = 1 Then 
-                ShowMessage "µã¹ıÔŞÁË"
+                ShowMessage "ç‚¹è¿‡èµäº†"
                 Delay deviceDelay
             Else 
                 Delay playTime
@@ -218,40 +218,40 @@ Function DoLike(p)
                     pointers(4) = CStr(likeNumber)
                     lFlag = False
                     pointers(8) = "0" 
-                    ShowMessage"ÒÑÍê³ÉµÚ" & likeNumber & "´ÎµãÔŞ"
+                    ShowMessage"å·²å®Œæˆç¬¬" & likeNumber & "æ¬¡ç‚¹èµ"
                     Delay deviceDelay
                 Else 
-                    ShowMessage "µãÔŞÊ§°Ü"
+                    ShowMessage "ç‚¹èµå¤±è´¥"
                     Delay deviceDelay
                 End If
             End If
-            //ÍË³ö²¥·ÅÒ³
+            //é€€å‡ºæ’­æ”¾é¡µ
             KeyPress "Back"
             Delay deviceDelay
         End If
-        //ÍË³öÓÃ»§Ò³
+        //é€€å‡ºç”¨æˆ·é¡µ
         KeyPress "Back"
         Delay deviceDelay
     Else 
-        ShowMessage "ËÑË÷Ê§°Ü£¬Çë¼ì²éID»òÍøÂç"
+        ShowMessage "æœç´¢å¤±è´¥ï¼Œè¯·æ£€æŸ¥IDæˆ–ç½‘ç»œ"
         Delay deviceDelay	
     End If
-    //ÍË³öËÑË÷Ò³
+    //é€€å‡ºæœç´¢é¡µ
     //KeyPress "Back"
     //Delay deviceDelay
     TapDly(cancelX, cancelY)
 End Function
 
 /*
-pointers(0):¹Ø×¢Î»ÖÃ
-pointers(1):¹Ø×¢´ÎÊı
-pointers(2):¹Ø×¢±êÖ¾ 
-pointers(3):µãÔŞÎ»ÖÃ
-pointers(4):µãÔŞ´ÎÊı
-pointers(5):µãÔŞ±êÖ¾
-pointers(6):Ğ´ÈëÊ±¼ä 
-pointers(7):¹Ø×¢½×¶Î±êÖ¾ 
-pointers(8):µãÔŞ½×¶Î±êÖ¾
+pointers(0):å…³æ³¨ä½ç½®
+pointers(1):å…³æ³¨æ¬¡æ•°
+pointers(2):å…³æ³¨æ ‡å¿— 
+pointers(3):ç‚¹èµä½ç½®
+pointers(4):ç‚¹èµæ¬¡æ•°
+pointers(5):ç‚¹èµæ ‡å¿—
+pointers(6):å†™å…¥æ—¶é—´ 
+pointers(7):å…³æ³¨é˜¶æ®µæ ‡å¿— 
+pointers(8):ç‚¹èµé˜¶æ®µæ ‡å¿—
 */
 Sub Init()
     ids = File.ReadLines(idspath)
@@ -265,13 +265,25 @@ Sub Init()
         pointers(4) = "0"
         pointers(5) = "1"
         pointers(6) = today
+        pointers(7) = "1"
+        pointers(8) = "1"
         File.WriteLines(progress, pointers)
+    End If
+    If maxFollow >= idLines Then 
+    	ShowMessage "ç‚¹èµä¸Šé™è¶…è¿‡è´¦å·æ•°é‡,è¯·é‡æ–°å¡«å†™"
+    	Delay deviceDelay
+    	EndScript
+    End If
+    If maxLike >= idLines Then 
+    	ShowMessage "å…³æ³¨ä¸Šé™è¶…è¿‡è´¦å·æ•°é‡,è¯·é‡æ–°å¡«å†™"
+    	Delay deviceDelay
+    	EndScript
     End If
 End Sub
 
 Sub Run()
     If isFollow = false And isLike = false Then 
-        ShowMessage "ÇëÖÁÉÙÑ¡ÔñµãÔŞ»ò¹Ø×¢ÆäÖĞÒ»Ïî²Ù×÷ºóÖØĞÂ¿ªÊ¼"
+        ShowMessage "è¯·è‡³å°‘é€‰æ‹©ç‚¹èµæˆ–å…³æ³¨å…¶ä¸­ä¸€é¡¹æ“ä½œåé‡æ–°å¼€å§‹"
         Delay deviceDelay
         EndScript
     Else
@@ -290,22 +302,22 @@ Sub Run()
             If followFlag Then
                 Call Follow(followPosition)
             Else 
-                ShowMessage "¹Ø×¢ÊıÒÑ´ïÉÏÏŞ"
+                ShowMessage "å…³æ³¨æ•°å·²è¾¾ä¸Šé™"
                 Delay deviceDelay
             End If	
         Else 
-            ShowMessage "Î´¹´Ñ¡¹Ø×¢Ñ¡Ïî, Ö»½øĞĞ¹Ø×¢²Ù×÷"
+            ShowMessage "æœªå‹¾é€‰å…³æ³¨é€‰é¡¹, åªè¿›è¡Œå…³æ³¨æ“ä½œ"
             Delay deviceDelay
         End If
         If isLike = true Then 
             If likeFlag Then
                 Call Like(likePosition)
             Else 
-                ShowMessage "¹Ø×¢ÊıÒÑ´ïÉÏÏŞ"
+                ShowMessage "å…³æ³¨æ•°å·²è¾¾ä¸Šé™"
                 Delay deviceDelay
             End If
         Else 
-            ShowMessage "Î´¹´Ñ¡µãÔŞÑ¡Ïî"
+            ShowMessage "æœªå‹¾é€‰ç‚¹èµé€‰é¡¹"
             Delay deviceDelay
         End If
     End If
