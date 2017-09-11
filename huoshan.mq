@@ -1,0 +1,315 @@
+//ID及进度文件路径
+Dim idspath = "/sdcard/火山.txt"
+Dim progress = "/sdcard/qz95277"
+//可配置参数
+Dim deviceDelay = ReadUIConfig("点击延时")*1000
+Dim playTime = ReadUIConfig("播放时长")*1000
+Dim loadDelay = ReadUIConfig("网络延时")*1000
+Dim followRound = ReadUIConfig("关注轮数")
+Dim likeRound = ReadUIConfig("点赞轮数")
+Dim maxFollow = CInt(ReadUIConfig("关注上限"))
+Dim maxLike = CInt(ReadUIConfig("点赞上限"))
+Dim isFollow = ReadUIConfig("关注")
+Dim isLike = ReadUIConfig("点赞")
+//坐标
+Dim homeX = 70, homeY = 1218
+Dim searchX = 42, searchY = 87
+Dim cancelX = 660, cancelY = 90
+Dim idEntryX = 57, idEntryY = 190
+//Dim backX = , backY = 
+Dim followX = 633, followY = 193 
+Dim likeX = 505, likeY = 1210
+//Dim recommendX = 652, recommendY = 301
+Dim videoX = 119, videoY = 765
+//Dim uplaodX = 360, uploadY = 1230
+//Dim photosX = 120, phontosY = 1235
+//过程变量
+Dim followFlag, likeFlag, fFlag, lFlag, followNumber, likeNumber, idLines
+Dim pointers(), ids()
+/*
+Sub ShowStr(str)
+	ShowMessage str
+	Delay deviceDelay
+End Sub
+Function Upload()
+	//
+End Function
+Function encrypt(str)
+    //enstr1 = Encode.Md5(str)
+    //enstr2 = Now()
+End Function
+Function Auth()
+    Dim sn = ReadUIConfig("序列号")
+    Dim id = GetDeviceID()
+    Dim payload ="username=" & sn & "&password=" & id
+    Dim srv_url = "http://192.168.11.189/signin"
+    Dim r = url.post( srv_url, payload)
+    If r = "valid" Then 
+        Auth = True
+    ElseIf r = "unvalid" Then
+        ShowMessage "序列号错误"
+        Delay cDly
+        Auth = False
+    ElseIf r = "duplicate" Then
+        ShowMessage "该序列号已被其他手机绑定"
+        Delay cDly
+        Auth = False
+    Else 
+        ShowMessage "认证超时，请检查网络"
+        Delay cDly
+        Auth = False
+    End If
+    Auth = True
+End Function
+*/
+Sub TapDly(x, y)
+    Tap x, y
+    Delay deviceDelay
+End Sub
+
+Function OnScriptExit()
+	ShowMessage "程序即将退出"
+	Delay deviceDelay
+	File.ReadLines(progress, pointers)
+End Function
+
+Function Search(n)
+    InputText Ids(n)
+    Delay loadDelay
+    Dim intX,intY
+    FindColor 105,162,162,192,"1E1E1E",0,0.9,intX,intY
+    If intX > -1 And intY > -1 Then
+        Search = True
+    Else 
+        Search = False
+    End If
+End Function
+
+//从指定用户开始关注
+Function Follow(fp)
+    If followNumber <= maxFollow Then
+        For p = fp To idLines - 1
+            pointers(0) = CStr(p)
+            Dim j = followNumber Mod (maxFollow \ followRound)
+            If j = 0 Then 
+                If followNumber = 0 Then 
+                    Call DoFollow(p)
+                Else 
+                    If fFlag Then 
+                        Call DoFollow(p)
+                    Else 
+                        fFlag = True
+                        pointers(7) = "1"
+                        //File.WriteLine(progress, pointers)
+                        ShowMessage "已完成第" & followNumber \ (maxFollow \ followRound) & "轮关注, 共" & followRound & "轮"
+                        Delay deviceDelay
+                        //Call Upload()
+                        EndScript
+                    End If	
+                End If
+            Else
+                Call DoFollow(p)
+            End If
+        Next	
+    Else
+        followFlag = False
+        pointers(5) = "0" 
+        ShowMessage "关注次数已达上限, 不再关注"
+        Delay deviceDelay
+    End If		
+End Function
+
+Function DoFollow(p)
+    //进入搜索页
+    TapDly(searchX, searchY)
+    Dim r = Search(p)
+    If r = True Then 
+        Dim intX, intY
+        FindColor(600, 180, 665, 205, "0022FF", 0, 0.9, intX, intY)
+        If intX > -1 And intY > -1 Then
+            TapDly followX, followY
+            //判断是否关注成功
+            FindColor(600,180,665,205,"0022FF",0,0.9,intX,intY)
+            If intX > -1 And intY > -1 Then
+                DoFollow = False
+                ShowMessage "关注失败"
+                Delay deviceDelay
+            Else 
+                followNumber = followNumber + 1
+                pointers(1) = CStr(followNumber)
+                fFlag = False
+                pointers(7) = "0"
+                ShowMessage"已关注第" & followNumber & "个用户"
+                Delay deviceDelay
+            End If
+        Else 
+            ShowMessage "关注过了"
+            Delay deviceDelay
+        End If
+    Else 
+        ShowMessage "搜索失败，请检查ID或网络"
+        Delay deviceDelay
+    End If
+    //退出搜索页	
+    //KeyPress "Back"
+    //Delay deviceDelay
+    TapDly(cancelX, cancelY)
+End Function
+
+Function Like(fl)
+    If LikeNumber <= MaxLike Then
+        Dim p, j
+        For p = fl To idLines - 1
+            pointers(3) = CStr(p) 
+            j = likeNumber Mod (maxLike \ likeRound)
+            If j = 0 Then 
+                If likeNumber = 0 Then 
+                    Call DoLike(p)
+                Else 
+                    //Call Upload()
+                    If lFlag Then 
+                        Call DoLike(p)
+                    Else
+                        lFlag = True
+                        pointers(8) = "1"
+                        //File.WriteLines(progress, pointers) 
+                        ShowMessage "已完成第" & likeNumber \ (maxLike \ likeRound) & "轮点赞， 共" & likeRound & "轮"
+                        Delay deviceDelay
+                        EndScript
+                    End If	
+                End If
+            Else 
+                Call DoLike(p)
+            End If
+        Next
+        fl = 0
+    Else
+        likeFlag = False
+        pointers(2) = "0"
+        //File.WriteLines(progress, pointers)
+        ShowMessage "关注次数已达上限, 不再关注"
+        Delay deviceDelay
+    End If
+End Function
+
+Function DoLike(p)
+    //进入搜索页
+    TapDly searchX, searchY
+    Dim r = Search(p)
+    If r =True Then 
+        //进入用户页
+        TapDly(idEntryX, idEntryY)
+        Delay loadDelay
+        If CmpColorEx("110|780|FFFFFF, 80|810|FFFFFF, 200|810|FFFFFF, 110|845|FFFFFF", 0.9) = 1 Then 
+            ShowMessage "未发现视频"
+            Delay deviceDelay
+        Else 
+            //进入播放页
+            TapDly(videoX, videoY)
+            Delay loadDelay
+            If CmpColorEx("492|1202|0022FF,507|1216|0022FF", 0.9) = 1 Then 
+                ShowMessage "点过赞了"
+                Delay deviceDelay
+            Else 
+                Delay playTime
+                TapDly(likeX, likeY)
+                If CmpColorEx("492|1202|0022FF,507|1216|0022FF", 0.9) = 1 Then 
+                    likeNumber = likeNumber + 1
+                    pointers(4) = CStr(likeNumber)
+                    lFlag = False
+                    pointers(8) = "0" 
+                    ShowMessage"已完成第" & likeNumber & "次点赞"
+                    Delay deviceDelay
+                Else 
+                    ShowMessage "点赞失败"
+                    Delay deviceDelay
+                End If
+            End If
+            //退出播放页
+            KeyPress "Back"
+            Delay deviceDelay
+        End If
+        //退出用户页
+        KeyPress "Back"
+        Delay deviceDelay
+    Else 
+        ShowMessage "搜索失败，请检查ID或网络"
+        Delay deviceDelay	
+    End If
+    //退出搜索页
+    //KeyPress "Back"
+    //Delay deviceDelay
+    TapDly(cancelX, cancelY)
+End Function
+
+/*
+pointers(0):关注位置
+pointers(1):关注次数
+pointers(2):关注标志 
+pointers(3):点赞位置
+pointers(4):点赞次数
+pointers(5):点赞标志
+pointers(6):写入时间 
+pointers(7):关注阶段标志 
+pointers(8):点赞阶段标志
+*/
+Sub Init()
+    ids = File.ReadLines(idspath)
+    idLines = UBOUND(Ids)
+    pointers = File.ReadLines(progress)
+    Dim today = CStr(Date())
+    Dim d = pointers(6) 
+    If today <> d Then 
+        pointers(1) = "0"
+        pointers(2) = "1"
+        pointers(4) = "0"
+        pointers(5) = "1"
+        pointers(6) = today
+        File.WriteLines(progress, pointers)
+    End If
+End Sub
+
+Sub Run()
+    If isFollow = false And isLike = false Then 
+        ShowMessage "请至少选择点赞或关注其中一项操作后重新开始"
+        Delay deviceDelay
+        EndScript
+    Else
+        RunApp "com.ss.android.ugc.live"
+        KeepScreen True
+        Delay 3000
+        Dim followPosition = CInt(pointers(0))
+        Dim likePosition = CInt(pointers(3))
+        followNumber = CInt(pointers(1))
+        followFlag = CBool(pointers(2))
+        likeNumber = CInt(pointers(4))
+        likeFlag = CBool(pointers(5))
+        fFlag = CBool(pointers(7))
+        lFlag = CBool(pointers(8))
+        If isFollow = true Then 
+            If followFlag Then
+                Call Follow(followPosition)
+            Else 
+                ShowMessage "关注数已达上限"
+                Delay deviceDelay
+            End If	
+        Else 
+            ShowMessage "未勾选关注选项, 只进行关注操作"
+            Delay deviceDelay
+        End If
+        If isLike = true Then 
+            If likeFlag Then
+                Call Like(likePosition)
+            Else 
+                ShowMessage "关注数已达上限"
+                Delay deviceDelay
+            End If
+        Else 
+            ShowMessage "未勾选点赞选项"
+            Delay deviceDelay
+        End If
+    End If
+End Sub
+
+Call Init()
+Call Run()
